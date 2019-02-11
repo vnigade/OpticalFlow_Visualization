@@ -110,6 +110,18 @@ def flow_compute_color(u, v, convert_to_bgr=False):
 
     return flow_image
 
+def _flow_to_color(u, v, convert_to_bgr):
+    rad = np.sqrt(np.square(u) + np.square(v))
+    rad_max = np.max(rad)
+
+    epsilon = 1e-5
+    u = u / (rad_max + epsilon)
+    v = v / (rad_max + epsilon)
+
+    return flow_compute_color(u, v, convert_to_bgr)
+
+def flow_xy_to_color(u, v, convert_to_bgr=False):
+    return _flow_to_color(u, v, convert_to_bgr)
 
 def flow_to_color(flow_uv, clip_flow=None, convert_to_bgr=False):
     '''
@@ -132,11 +144,4 @@ def flow_to_color(flow_uv, clip_flow=None, convert_to_bgr=False):
     u = flow_uv[:,:,0]
     v = flow_uv[:,:,1]
 
-    rad = np.sqrt(np.square(u) + np.square(v))
-    rad_max = np.max(rad)
-
-    epsilon = 1e-5
-    u = u / (rad_max + epsilon)
-    v = v / (rad_max + epsilon)
-
-    return flow_compute_color(u, v, convert_to_bgr)
+    return _flow_to_color(u, v, convert_to_bgr)

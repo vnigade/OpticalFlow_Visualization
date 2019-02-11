@@ -19,24 +19,27 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 import flow_vis
+import cv2
+import argparse
 
-# Load normalized flow image of shape [H,W,2]
-flow_uv = np.load('./data/flow_example_data.npy')
+# Parse arguments
+parser = argparse.ArgumentParser(description='Visualize optical flow')
+parser.add_argument("flow_dir", help="Optical flow directory")
+parser.add_argument("video_name", help="Video name ")
+parser.add_argument("--frame_num", type=int, default=1, help="Frame number to be used")
 
-# Apply the coloring (for OpenCV, set convert_to_bgr=True)
-flow_color = flow_vis.flow_to_color(flow_uv, convert_to_bgr=False)
+args = parser.parse_args()
+flow_dir = args.flow_dir
+video_name = args.video_name
+frame_num="frame" + "%06d" % (args.frame_num) + '.jpg'
 
-# Display the image
+u = cv2.imread(flow_dir + "x/" + video_name + "/" + frame_num, 0) 
+v = cv2.imread(flow_dir + "y/" + video_name + "/" + frame_num, 0)
+u = np.array(u) 
+v = np.array(v)
+u = u - np.mean(u)
+v = v - np.mean(v)
+
+flow_color = flow_vis.flow_xy_to_color(u, v, convert_to_bgr=False)
 plt.imshow(flow_color)
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
